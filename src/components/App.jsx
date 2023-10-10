@@ -17,6 +17,20 @@ export class App extends Component {
     filter: '',
   };
 
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (!parsedContacts) return;
+
+    this.setState({ contacts: parsedContacts });
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
+
   handleAddNewContact = formData => {
     const isNameExist = this.state.contacts.some(
       contact => contact.name.toLowerCase() === formData.name.toLowerCase()
@@ -65,12 +79,7 @@ export class App extends Component {
 
     return (
       <div className={css.container}>
-        <PhoneForm
-          // name={name}
-          // number={number}
-          // onChange={this.handleInputChange}
-          onSubmit={this.handleAddNewContact}
-        />
+        <PhoneForm onSubmit={this.handleAddNewContact} />
         <h2>Contacts</h2>
         <Filter filter={filter} handleFilterChange={this.handleFilterChange} />
         <Contacts
